@@ -1,2 +1,1 @@
-# oc2bioc
-simple interface between OpenCRAVAT and Bioconductor
+vignettes/oc2bioc.Rmd

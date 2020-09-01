@@ -1,0 +1,22 @@
+---
+title: "Introduction to the oc2bioc package"
+author:
+- name: Vincent Carey
+  affiliation: Channing Division of Network Medicine, Brigham and Women's Hospital
+  email: stvjc@channing.harvard.edu
+package: oc2bioc
+output:
+  BiocStyle::html_document
+abstract: |
+  This package defines simple interfaces between OpenCRAVAT and Bioconductor
+vignette: |
+  %\VignetteIndexEntry{Introduction to the oc2bioc package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+We propose a bidirectional interface between Bioconductor and OpenCRAVAT.
+
+![filtered table of modules](filt.png)
