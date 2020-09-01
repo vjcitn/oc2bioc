@@ -53,3 +53,20 @@ populate_module_set = function() {
  new("OpenCRAVATModuleSet", modset=vals, created=date())
 }
 
+#' convert some of the fields of module metadata to a data.frame
+#' @importMethodsFrom BiocGenerics as.data.frame
+#' @export
+setMethod("as.data.frame", "OpenCRAVATModuleSet", function(x) {
+   nna = function(x) {
+          if (is.null(x)) return(NA)
+          return(x)
+          }
+   tmp = lapply(x@modset, function(x) {
+      data.frame(title=x@title, type=x@type, developer=nna(x@developer$email), latest_version=x@latest_version,
+         name=x@name, description=x@description, published=x@publish_time)
+      })
+   do.call(rbind, tmp)
+})
+  
+ 
+
