@@ -6,6 +6,9 @@
 \usage{
 \S4method{show}{OpenCRAVATModule}(object)
 }
+\arguments{
+\item{object}{instance of OpenCRAVATModule}
+}
 \description{
 display OpenCRAVAT module metadata in R
 }

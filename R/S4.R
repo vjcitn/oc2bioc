@@ -14,6 +14,7 @@ setClass("OpenCRAVATModule",
 
 #' display OpenCRAVAT module metadata in R
 #' @importFrom stringr str_wrap
+#' @param object instance of OpenCRAVATModule
 #' @export
 setMethod("show", "OpenCRAVATModule", function(object) {
  cat("OpenCRAVAT module ", object@name, "\n")
@@ -26,6 +27,7 @@ setMethod("show", "OpenCRAVATModule", function(object) {
 setClass("OpenCRAVATModuleSet", representation(modset="list", created="ANY"))
 
 #' display set of R representations of OpenCRAVAT module metadata
+#' @param object instance of OpenCRAVATModuleSet
 #' @export
 setMethod("show", "OpenCRAVATModuleSet", function(object) {
 cat("OpenCRAVATModuleSet, created ", object@created, "\n")
@@ -39,6 +41,9 @@ print(table(sapply(object@modset, function(x) x@type)))
 #' @import methods
 #' @export
 populate_module_set = function() {
+ proc = basilisk::basiliskStart(ocbenv) # avoid package-specific import
+ on.exit(basilisk::basiliskStop(proc))
+ basilisk::basiliskRun(proc, function() {
  cra = reticulate::import("cravat", convert=TRUE)
  modnames = cra$admin_util$search_remote(".*")
  allinfo = lapply(modnames, function(x)
@@ -51,10 +56,12 @@ populate_module_set = function() {
     })
  names(vals) = modnames
  new("OpenCRAVATModuleSet", modset=vals, created=date())
+ })
 }
 
 #' convert some of the fields of module metadata to a data.frame
 #' @importMethodsFrom BiocGenerics as.data.frame
+#' @param x instance of OpenCRAVATModuleSet
 #' @export
 setMethod("as.data.frame", "OpenCRAVATModuleSet", function(x) {
    nna = function(x) {

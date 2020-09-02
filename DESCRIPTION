@@ -1,6 +1,6 @@
 Package: oc2bioc
 Title: simple interfaces from OpenCRAVAT to Bioconductor
-Version: 0.0.0
+Version: 0.0.2
 Authors@R: 
     c(person(
         "Vincent", "Carey", role = c("aut", "cre"),
@@ -11,12 +11,13 @@ Description: Provide simple interfaces between OpenCRAVAT and Bioconductor
     for annotation of cancer-related variants.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 4.0)
+Depends: R (>= 4.0), reticulate
 Imports:
     methods, reticulate, S4Vectors,
-    BiocManager, stringr, BiocGenerics
+    BiocManager, stringr, BiocGenerics, basilisk
 Suggests: knitr, testthat
 LazyData: true
 VignetteBuilder: knitr
 biocViews: Infrastructure
 RoxygenNote: 7.1.1
+StagedInstall: false

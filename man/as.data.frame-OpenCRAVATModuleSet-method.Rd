@@ -6,6 +6,9 @@
 \usage{
 \S4method{as.data.frame}{OpenCRAVATModuleSet}(x)
 }
+\arguments{
+\item{x}{instance of OpenCRAVATModuleSet}
+}
 \description{
 convert some of the fields of module metadata to a data.frame
 }
