@@ -13,7 +13,7 @@ License: Artistic-2.0
 Encoding: UTF-8
 Depends: R (>= 4.0), reticulate
 Imports:
-    methods, reticulate, S4Vectors,
+    methods, reticulate, S4Vectors, httr,
     BiocManager, stringr, BiocGenerics, basilisk
 Suggests: knitr, testthat
 LazyData: true
