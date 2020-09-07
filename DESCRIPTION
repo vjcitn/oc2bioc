@@ -1,6 +1,6 @@
 Package: oc2bioc
 Title: simple interfaces from OpenCRAVAT to Bioconductor
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: 
     c(person(
         "Vincent", "Carey", role = c("aut", "cre"),
@@ -15,7 +15,7 @@ Depends: R (>= 4.0), reticulate, httr
 Imports:
     methods, reticulate, S4Vectors,
     BiocManager, stringr, BiocGenerics, basilisk
-Suggests: knitr, testthat
+Suggests: knitr, testthat, listviewer
 LazyData: true
 LazyLoad: true
 VignetteBuilder: knitr
