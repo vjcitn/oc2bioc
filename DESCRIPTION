@@ -11,13 +11,14 @@ Description: Provide simple interfaces between OpenCRAVAT and Bioconductor
     for annotation of cancer-related variants.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 4.0), reticulate
+Depends: R (>= 4.0), reticulate, httr
 Imports:
-    methods, reticulate, S4Vectors, httr,
+    methods, reticulate, S4Vectors,
     BiocManager, stringr, BiocGenerics, basilisk
 Suggests: knitr, testthat
 LazyData: true
+LazyLoad: true
 VignetteBuilder: knitr
-biocViews: Infrastructure
+biocViews: Infrastructure, Cancer, VariantAnnotation, Genetics
 RoxygenNote: 7.1.1
 StagedInstall: false

@@ -15,13 +15,13 @@ queryOC(
 )
 }
 \arguments{
-\item{uname}{user name registered at run.opencravat.org}
+\item{uname}{user name registered at run.opencravat.org; will use value of environment variable OCRAVAT_USERNAME if missing}
 
-\item{passwd}{password for opencravat account}
+\item{passwd}{password for opencravat account; will use value of environment variable OCRAVAT_PASSWORD if missing}
 
 \item{chr}{character(1) chromosome in chrn format}
 
-\item{pos}{character(1) position}
+\item{pos}{character(1) position, in hg38 coordinates}
 
 \item{ref}{character(1) reference base}
 
