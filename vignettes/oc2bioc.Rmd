@@ -13,11 +13,12 @@ vignette: |
   %\VignetteIndexEntry{Introduction to the oc2bioc package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: oc2bioc.bib
 ---
 
 # Introduction
 
-We propose a bidirectional interface between Bioconductor and OpenCRAVAT.
+We propose a bidirectional interface between Bioconductor (@Huber2015) and OpenCRAVAT (@Pagel2020).
 
 ## Enumerating OpenCRAVAT "modules"
 
@@ -37,8 +38,11 @@ ms
 
 An as.data.frame method is available.
 ```{r lkh}
-head(as.data.frame(ms))
+dim(as.data.frame(ms))
 ```
+
+Use `DT::datatable` with the data.frame instance to obtain the
+searchable table depicted above.
 
 ## Single-variant queries
 
@@ -66,7 +70,7 @@ listviewer::jsonedit(content(var_in_tx),height=200L)
 ```
 
 Another illustration with a variant in a long non-coding RNA
-(Suvanto et al 2020) is:
+(@Suvanto2020) is:
 ```{r dononc,eval=FALSE}
 nonco_var = queryOC(chr="chr15", pos="50394581", ref="G", alt="C", 
    annotator=c("chasmplus_BRCA", "pubmed", "segway_breast", 
@@ -75,3 +79,4 @@ nonco_var = queryOC(chr="chr15", pos="50394581", ref="G", alt="C",
 listviewer::jsonedit(content(nonco_var), height=300L)
 ```
 
+# References
