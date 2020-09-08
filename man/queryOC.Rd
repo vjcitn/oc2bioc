@@ -5,6 +5,7 @@
 \title{single-variant query}
 \usage{
 queryOC(
+  baseURL = "https://run.opencravat.org",
   uname,
   passwd,
   chr = "chr1",
@@ -31,6 +32,14 @@ queryOC(
 }
 \description{
 single-variant query
+}
+\note{
+The default value of `baseURL` entails that this function
+will query run.opencravat.org.  A username and password must
+be supplied in this case.  For other values of `baseURL`, no
+authentication is attempted at this time.  For a local instance
+of OpenCRAVAT, `http://0.0.0.0:8080` is a default setting for
+baseURL.
 }
 \examples{
 queryOC # don't want to use auth

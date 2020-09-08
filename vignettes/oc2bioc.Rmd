@@ -81,6 +81,14 @@ listviewer::jsonedit(content(nonco_var), height=300L)
 
 # Working with a local deployment of OpenCRAVAT
 
+## Using the REST API
+
+When a local deployment is running, for example via `oc gui`,
+`queryOC` can be used with appropriate settings of `baseURL`
+to direct queries to locally installed annotators.
+
+## Direct querying of annotator SQLite
+
 Local deployments of OpenCRAVAT will have SQLite databases
 corresponding to the installed annotators.  The `oc2bioc`
 package includes utilities for identifying and
