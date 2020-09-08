@@ -75,5 +75,3 @@ setMethod("as.data.frame", "OpenCRAVATModuleSet", function(x) {
    do.call(rbind, tmp)
 })
   
- 
-

@@ -79,4 +79,33 @@ nonco_var = queryOC(chr="chr15", pos="50394581", ref="G", alt="C",
 listviewer::jsonedit(content(nonco_var), height=300L)
 ```
 
+# Working with a local deployment of OpenCRAVAT
+
+Local deployments of OpenCRAVAT will have SQLite databases
+corresponding to the installed annotators.  The `oc2bioc`
+package includes utilities for identifying and
+querying these.  
+
+Here's an example.  Segway's lung data is actually all based on fetal lung tissue.
+```
+> list_local_annotators()
+[1] "clinvar"       "genehancer"    "segway_lung"   "segway_muscle"
+> lcon = connect_local_annotator("segway_lung")
+> dbListTables(lcon)
+ [1] "chr1"                    "chr10"                  
+ [3] "chr11"                   "chr12"                  
+ [5] "chr12_GL877875v1_alt"    "chr13"                  
+...
+> lcon %>% tbl("chr1") %>% glimpse()
+Rows: ??
+Columns: 5
+Database: sqlite 3.30.1 [/home/stvjc/.local/lib/python3.8/site-packages/cravat/modules/annotators/segway_lung/data/segway_lung.sqlite]
+$ bin    <int> 585, 585, 585, 585, 585, 585, 585, 585, 585, 585, 585, 585, 58…
+$ start  <int> 11000, 13000, 13500, 14800, 15100, 54400, 54700, 55700, 79100,…
+$ end    <int> 13000, 13500, 14800, 15100, 16100, 54700, 55700, 56000, 79300,…
+$ tissue <chr> "FETAL_LUNG", "FETAL_LUNG", "FETAL_LUNG", "FETAL_LUNG", "FETAL…
+$ state  <chr> "11_Quiescent", "9_Quiescent", "11_Quiescent", "9_Quiescent", …
+```
+
+
 # References

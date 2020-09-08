@@ -1,6 +1,6 @@
 Package: oc2bioc
 Title: simple interfaces from OpenCRAVAT to Bioconductor
-Version: 0.0.5
+Version: 0.0.7
 Authors@R: 
     c(person(
         "Vincent", "Carey", role = c("aut", "cre"),
@@ -13,7 +13,7 @@ License: Artistic-2.0
 Encoding: UTF-8
 Depends: R (>= 4.0), reticulate, httr
 Imports:
-    methods, S4Vectors,
+    methods, S4Vectors, RSQLite,
     stringr, BiocGenerics, basilisk
 Suggests: knitr, testthat, listviewer
 LazyData: true
