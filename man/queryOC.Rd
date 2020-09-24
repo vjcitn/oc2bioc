@@ -16,6 +16,8 @@ queryOC(
 )
 }
 \arguments{
+\item{baseURL}{character(1) URL for server to use}
+
 \item{uname}{user name registered at run.opencravat.org; will use value of environment variable OCRAVAT_USERNAME if missing}
 
 \item{passwd}{password for opencravat account; will use value of environment variable OCRAVAT_PASSWORD if missing}

@@ -16,3 +16,10 @@
 #' @examples
 #' names(httr::content(nonco_var))
 "nonco_var"
+
+#' a chain object for transforming hg19 to GRCh38 coordinates
+#' @docType data
+#' @format rtracklayer chain structure
+#' @examples
+#' ch19to38
+"ch19to38"

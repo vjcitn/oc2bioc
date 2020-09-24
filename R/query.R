@@ -8,6 +8,7 @@ logoutOC = function()
 
 #' single-variant query
 #' @import httr
+#' @param baseURL character(1) URL for server to use
 #' @param uname user name registered at run.opencravat.org; will use value of environment variable OCRAVAT_USERNAME if missing
 #' @param passwd password for opencravat account; will use value of environment variable OCRAVAT_PASSWORD if missing
 #' @param chr character(1) chromosome in chrn format
