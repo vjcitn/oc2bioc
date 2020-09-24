@@ -13,8 +13,9 @@ License: Artistic-2.0
 Encoding: UTF-8
 Depends: R (>= 4.0), reticulate, httr
 Imports:
-    methods, S4Vectors, RSQLite,
-    stringr, BiocGenerics, basilisk, rtracklayer
+    methods, S4Vectors, RSQLite, GenomicRanges,
+    stringr, BiocGenerics, basilisk, rtracklayer,
+    GenomeInfoDb
 Suggests: knitr, testthat, listviewer
 LazyData: true
 LazyLoad: true

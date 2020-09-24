@@ -23,3 +23,10 @@
 #' @examples
 #' ch19to38
 "ch19to38"
+
+#' mutations (SNV) from TCGA ACC
+#' @docType data
+#' @format GRanges
+#' @examples
+#' gr38[1:5,1:6]
+"gr38"

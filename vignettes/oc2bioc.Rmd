@@ -120,6 +120,11 @@ gr = unlist(as(mut, "GRangesList"))
 dim(mcols(gr))
 head(gr[,1:3])
 ```
+Confine attention to SNV.
+```{r getsnv}
+gr = gr[width(gr)==1]
+```
+```
 We'll want the variants in GRCh38 coordinates.
 ```{r doma}
 seqlevels(gr) = paste0("chr", seqlevels(gr))
@@ -128,23 +133,17 @@ genome(gr38) = "hg38" # UCSC terminology
 head(gr38[,1:3])
 ```
 
-### Transforming to a POST-able file
+### Transforming to a POST-able file, via data.frame
 
 ```{r mm}
-make_oc_POSTable = function(gr, chain=NULL, genome=NULL) {
- stopifnot(inherits(gr, "GRanges"))
- if (!is.null(chain)) {
-  gr = unlist(rtracklayer::liftOver(gr, chain))
-  if (!is.null(genome)) genome(gr) = genome
-  }
- gr = gr[width(gr)==1]
- v = paste0("v_", seq_len(length(gr)))
- gg = unique(genome(gr))[1]
- data.frame(chr=as.character(seqnames(gr)), pos=start(gr), ref=gr$Reference_Allele,
-    alt=gr$Tumor_Seq_Allele2, samp=names(gr), var=v)
-}
-head(make_oc_POSTable(gr38)) # already remapped
+mtb = make_oc_POSTable(gr38) # already remapped
+head(mtb)
 ```
+Use code like
+```
+write.table(mtb, file="/tmp/abc.txt", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+```
+to create a file that can be ingested by OpenCRAVAT.
 
 ## Direct querying of annotator SQLite
 
