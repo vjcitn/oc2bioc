@@ -27,3 +27,40 @@ connect_local_annotator = function(name="clinvar") {
   dpath = paste0(pa, "/cravat/modules/annotators/", name, "/data/", name, ".sqlite")
   RSQLite::dbConnect(RSQLite::SQLite(), dpath)
 }
+
+#' get job status
+#' @param baseurl character(1) server url
+#' @param job_id character(1) id
+#' @export
+get_oc_job_status = function(baseurl = "http://0.0.0.0:8080/", job_id) {
+  httr::content(httr::GET(paste0(baseurl, "submit/jobs/", job_id, "/status")))$status
+}
+
+#' list local job id folder names
+#' @param path character(1) defaults to `local_oc_path()`
+#' @export
+local_oc_jobids = function(path=local_oc_path()) dir(paste0(path, "/cravat/jobs/default"))
+
+#' list local job folder content
+#' @param path character(1) defaults to `local_oc_path()`
+#' @param job_id character(1) a job id
+#' @param \dots passed to `dir()`
+#' @export
+local_oc_job_resources = function(path=local_oc_path(), job_id, ...) dir(paste0(path, "/cravat/jobs/default/", job_id), ...)
+
+#' import the 'crx' file with variant annotation
+#' @importFrom utils browseURL read.delim
+#' @param path character(1) defaults to `local_oc_path()`
+#' @param job_id character(1) required job id
+#' @return a data.frame
+#' @export
+import_local_crx = function(path=local_oc_path(), job_id) {
+ stopifnot(job_id %in% local_oc_jobids())
+ res = local_oc_job_resources(path=path, job_id=job_id, full=TRUE)
+ crxf = grep("crx$", res, value=TRUE)
+ lines = readLines(crxf)
+ comminds = grep("^#", lines)
+ ncomm = length(comminds)-1
+ read.delim(textConnection(lines[-seq_len(ncomm)]), h=TRUE, 
+   row.names=NULL, sep="\t", check.names=FALSE)
+}

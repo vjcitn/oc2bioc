@@ -16,7 +16,7 @@ Imports:
     methods, S4Vectors, RSQLite, GenomicRanges,
     stringr, BiocGenerics, basilisk, rtracklayer,
     GenomeInfoDb
-Suggests: knitr, testthat, listviewer
+Suggests: knitr, testthat, listviewer, curatedTCGAData
 LazyData: true
 LazyLoad: true
 VignetteBuilder: knitr

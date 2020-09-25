@@ -145,6 +145,42 @@ write.table(mtb, file="/tmp/abc.txt", sep="\t", col.names=FALSE, row.names=FALSE
 ```
 to create a file that can be ingested by OpenCRAVAT.
 
+### Submitting the multivariant query for local annotation
+
+Once the POSTable table has been written to a file, call `run_oc_req`
+with a `url` appropriate to your system, as in the following:
+```
+myrun = run_oc_req(url="http://0.0.0.0:8080/submit/submit",
+   postfile="/tmp/abc.txt", annotators=c("clinvar", "segway_lung"),
+   reports=c("text", "vcf"), assembly="hg38", note="test run")
+```
+The object `myrun` will be an R representation of a python dictionary
+with element `r`.  This can be interrogated as `myrun$r$json()` to
+get information about the run.
+```
+> str(myrun$r$json())
+List of 14
+ $ orig_input_fname   : chr "abc.txt"
+ $ assembly           : chr "hg38"
+ $ note               : chr "test run"
+ $ db_path            : chr ""
+ $ viewable           : logi FALSE
+ $ reports            : chr [1:2] "text" "vcf"
+ $ annotators         : chr [1:2] "clinvar" "segway_lung"
+ $ annotator_version  : chr ""
+ $ open_cravat_version: chr ""
+ $ num_input_var      : chr ""
+ $ submission_time    : chr "2020-09-25T14:15:20.625643"
+ $ id                 : chr "200925-141520"
+ $ run_name           : chr "abc.txt"
+ $ status             :List of 1
+  ..$ status: chr "Submitted"
+```
+Of crucial significance here is the `id` component.  This will be
+used to find the annotations computed by OpenCRAVAT.
+
+
+
 ## Direct querying of annotator SQLite
 
 Local deployments of OpenCRAVAT will have SQLite databases
