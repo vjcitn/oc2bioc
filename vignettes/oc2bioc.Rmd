@@ -118,10 +118,12 @@ to a `GRanges` with `unlist`.
 ```{r geta}
 gr = unlist(as(mut, "GRangesList"))
 dim(mcols(gr))
-head(gr[,1:3])
+head(gr[,1:3],3)
 ```
-Confine attention to SNV.
+Multibase variants are present.  We'll
+confine attention to single-nucleotide variants (SNV).
 ```{r getsnv}
+table(width(gr))[1:6]
 gr = gr[width(gr)==1]
 ```
 ```
@@ -130,7 +132,9 @@ We'll want the variants in GRCh38 coordinates.
 seqlevels(gr) = paste0("chr", seqlevels(gr))
 gr38 = unlist(rtracklayer::liftOver(gr, oc2bioc::ch19to38))
 genome(gr38) = "hg38" # UCSC terminology
-head(gr38[,1:3])
+head(gr38[,1:3],3)
+length(gr38)
+length(unique(gr38))
 ```
 
 ### Transforming to a POST-able file, via data.frame
@@ -179,6 +183,17 @@ List of 14
 Of crucial significance here is the `id` component.  This will be
 used to find the annotations computed by OpenCRAVAT.
 
+An example annotation resource is shipped with the package
+as `demo_crx`.
+```{r lkde}
+data(crx_demo)
+names(crx_demo)
+nonsyn = which(crx_demo[,10]!="SYN")
+head(crx_demo[nonsyn,c(2,3,8:10)])
+```
+
+### Retrieving locally generated annotation results
+
 
 
 ## Direct querying of annotator SQLite
@@ -208,6 +223,27 @@ $ end    <int> 13000, 13500, 14800, 15100, 16100, 54700, 55700, 56000, 79300,…
 $ tissue <chr> "FETAL_LUNG", "FETAL_LUNG", "FETAL_LUNG", "FETAL_LUNG", "FETAL…
 $ state  <chr> "11_Quiescent", "9_Quiescent", "11_Quiescent", "9_Quiescent", …
 ```
+
+# Appendix: Ontology resources
+
+Sequence Ontology (SO) is used to label and group variants by structural
+or functional type.  We noted abbreviations for SO terms in the `crx_demo`
+file and did not see a conventional mapping for these.  The mapping was
+extracted from JSON found in `cravat_util.py`.
+```{r lksom}
+head(SO_map)
+```
+
+To help interpret the SO terms, we include a snapshot of the SO that retains
+the graphical structure of relationships among terms.  A view of variant-related
+concepts can be plotted using tools in the ontologyIndex and ontoProc packages.
+```{r lksopl}
+ontoProc::onto_plot2(SO_onto, na.omit(SO_map[,3])[39:49])
+```
+Not all the terms used in OpenCRAVAT are in the display above, and most
+of the terms in the display are not explicitly used in OpenCRAVAT.  The
+display is here to orient readers to the SO concepts.
+
 
 
 # References

@@ -30,3 +30,27 @@
 #' @examples
 #' gr38[1:5,1:6]
 "gr38"
+
+#' annotation of mutations in OpenCRAVAT's crx format
+#' @docType data
+#' @format data.frame
+#' @note 500 records retained
+#' @examples
+#' crx_demo[1:5,1:6]
+"crx_demo"
+
+#' Sequence Ontology abbreviations and tags used with OpenCRAVAT
+#' @docType data
+#' @format data.frame
+#' @examples
+#' head(SO_map)
+"SO_map"
+
+#' Sequence Ontology ingested from OBO
+#' @docType data
+#' @format ontologyIndex instance
+#' @note Ingested from so.obo at https://github.com/The-Sequence-Ontology/SO-Ontologies/Ontology_Files
+#' @examples
+#' head(names(SO_onto))
+#' head(SO_onto$name)
+"SO_onto"
