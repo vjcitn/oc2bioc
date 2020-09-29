@@ -237,9 +237,11 @@ head(SO_map)
 To help interpret the SO terms, we include a snapshot of the SO that retains
 the graphical structure of relationships among terms.  A view of variant-related
 concepts can be plotted using tools in the ontologyIndex and ontoProc packages.
+
 ```{r lksopl}
 ontoProc::onto_plot2(SO_onto, na.omit(SO_map[,3])[39:49])
 ```
+
 Not all the terms used in OpenCRAVAT are in the display above, and most
 of the terms in the display are not explicitly used in OpenCRAVAT.  The
 display is here to orient readers to the SO concepts.
