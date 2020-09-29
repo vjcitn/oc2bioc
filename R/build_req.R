@@ -13,7 +13,7 @@
 #' to compose using a JSON constructor, and to use httr::POST.  But the quoting requirements
 #' and the use of open() in the request seem hard for such an approach.
 #' @examples
-#' run_oc_req()  # then use reticulate run_py_*
+#' if (interactive()) run_oc_req()  # then use reticulate run_py_*
 #' @export
 run_oc_req = function(url="http://0.0.0.0:8080/submit/submit",
    postfile="/tmp/abc.txt", annotators=c("clinvar", "segway_lung"),

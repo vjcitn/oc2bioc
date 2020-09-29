@@ -40,5 +40,5 @@ to compose using a JSON constructor, and to use httr::POST.  But the quoting req
 and the use of open() in the request seem hard for such an approach.
 }
 \examples{
-run_oc_req()  # then use reticulate run_py_*
+if (interactive()) run_oc_req()  # then use reticulate run_py_*
 }
