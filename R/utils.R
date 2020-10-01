@@ -101,7 +101,7 @@ key_modules = function() c("cravat-converter",
   "wgcodingvsnoncodingsummary", 
   "wggosummary", 
   "wgsosamplesummary", 
-  "wgsosummary", "cravat", "genehancer", "wgncrna",
+  "wgsosummary", "clinvar", "genehancer", "wgncrna",
   "wghg19", "wgbase", "wglollipop", "wgnote", "varmeta",
   "wgndex", "wgvcfinfo")
  
