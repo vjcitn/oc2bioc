@@ -1,7 +1,7 @@
 Package: oc2bioc
 Title: simple interfaces from OpenCRAVAT to Bioconductor
 Date: 2020-09-25
-Version: 0.0.16
+Version: 0.0.17
 Authors@R: 
     c(person(
         "Vincent", "Carey", role = c("aut", "cre"),

@@ -101,7 +101,9 @@ key_modules = function() c("cravat-converter",
   "wgcodingvsnoncodingsummary", 
   "wggosummary", 
   "wgsosamplesummary", 
-  "wgsosummary")
+  "wgsosummary", "cravat", "genehancer", "wgncrna",
+  "wghg19", "wgbase", "wglollipop", "wgnote", "varmeta",
+  "wgndex", "wgvcfinfo")
  
 #' install in the ocbenv
 #' @param modname character(1) 'name' as defined in OpenCRAVAT installation protocol
