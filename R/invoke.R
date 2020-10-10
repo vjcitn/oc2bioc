@@ -24,9 +24,9 @@ ocapp = function() {
  ui = fluidPage(
   sidebarLayout(
    sidebarPanel(
-    helpText("Variant Annotation with OpenCRAVAT"),
+    helpText("Variant Annotation with", a(href="https://github.com/KarchinLab/open-cravat/wiki", "OpenCRAVAT")),
     checkboxGroupInput("build", "ref. build", choices=c("hg38", "hg19"), selected="hg38"),
-    fileInput("basicfile", "TSV file")
+    fileInput("basicfile", "TSV file"), width=2
     ),
     mainPanel(
      tabsetPanel(
@@ -37,7 +37,8 @@ ocapp = function() {
        plotly::plotlyOutput("plot2")
        ),
       tabPanel("Variants", DT::dataTableOutput("vartab")),
-      tabPanel("Genes", DT::dataTableOutput("genetab"))
+      tabPanel("Genes", DT::dataTableOutput("genetab")),
+      tabPanel("Versions", verbatimTextOutput("vertab"))
       )
     )
    )
@@ -57,13 +58,20 @@ ocapp = function() {
    })
   output$vartab = DT::renderDataTable({
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
-    get_oc_tab(con)
-   }) # defaults
+    tmp = get_oc_tab(con)
+    ok = which(!is.na(tmp$Link)); # make active links for mupit plots
+    tmp$Link[ok] = paste("<a href='", tmp$Link[ok], "' target='_blank'>mupit</a>", sep="")
+    tmp
+   }, escape=FALSE) # defaults
   output$genetab = DT::renderDataTable({
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
     tmp = get_oc_tab(con, "gene")
     tmp[which(tmp[,3]>0),]
    }) # defaults
+  output$vertab = renderPrint({
+    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
+    DBI::dbReadTable(con, "info")
+   })
   output$plot1 = plotly::renderPlotly({
    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
    plotly::ggplotly(barplot_gene_ontology(con))
