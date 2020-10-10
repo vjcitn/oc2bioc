@@ -17,10 +17,10 @@ validate_tab = function(tab) {
 
 #' simple app
 #' @import shiny
-#' @import plotly
+#' @rawNamespace import("plotly", except=c("config", "last_plot", "select"))
 #' @import ggplot2
 #' @export
-ocapp = function() {
+ocapp = function(cravat_cmd="cravat") {
  ui = fluidPage(
   sidebarLayout(
    sidebarPanel(
@@ -49,7 +49,7 @@ ocapp = function() {
    req(file)
    ext = tools::file_ext(file$datapath)
    validate(need(ext == "tsv", "Use a tsv file"))
-   gg <- paste("cravat", file$datapath, "-t text -l", input$build)
+   gg <- paste(cravat_cmd, file$datapath, "-t text -l", input$build)
    dat <- read.delim(file$datapath, h=FALSE, sep="\t")
    showNotification("starting cravat...")
    system(gg)

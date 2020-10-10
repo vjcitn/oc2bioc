@@ -1,7 +1,7 @@
 #' transform internal _header tables to char vectors
 #' @importFrom jsonlite fromJSON
 #' @importFrom magrittr %>%
-#' @import dplyr
+#' @rawNamespace import("dplyr", except=c("select", "intersect"))
 #' @import ggplot2
 #' @param con DBI connection
 #' @param tblname character(1) table name

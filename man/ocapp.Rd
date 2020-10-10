@@ -4,7 +4,7 @@
 \alias{ocapp}
 \title{simple app}
 \usage{
-ocapp()
+ocapp(cravat_cmd = "cravat")
 }
 \description{
 simple app
