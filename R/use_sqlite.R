@@ -1,5 +1,8 @@
 #' transform internal _header tables to char vectors
 #' @importFrom jsonlite fromJSON
+#' @importFrom magrittr %>%
+#' @import dplyr
+#' @import ggplot2
 #' @param con DBI connection
 #' @param tblname character(1) table name
 #' @return vector of character
@@ -52,7 +55,7 @@ barplot_sequence_ontology = function(con) {
  names(somap) = SO_map$abbr
  vt$seq_onto = somap[vt$`Sequence Ontology`]
  vt$chr2 = ordered(vt$Chrom, levels=paste("chr", c(1:22, "X", "Y"), sep=""))
- ggplot(vt, aes(y=chr2, fill=seq_onto)) + geom_bar() 
+ ggplot2::ggplot(vt, aes(y=chr2, fill=seq_onto)) + ggplot2::geom_bar() 
 }
 
 #' make a gene ontology barplot over all variants
@@ -65,9 +68,10 @@ barplot_gene_ontology = function(con, kpev=c("EXP", "TAS"), ont=c("MF", "BP"), n
  gg = get_GO_table(con, kpev=kpev, ont=ont)
  dd = tail(sort(table(gg$term)), ncat)
  gg = gg[gg$term %in% names(dd),]
- ggplot(gg, aes(y=term, fill=EVIDENCE)) + geom_bar() 
+ ggplot2::ggplot(gg, aes(y=term, fill=EVIDENCE)) + ggplot2::geom_bar() 
 }
 
+#' @importFrom AnnotationDbi select mapIds
 get_GO_table = function(con, kpev=c("EXP", "TAS"), ont="MF") {
  vt = get_oc_sqlite_content(con, "variant")
  gg = unique(as.character(na.omit(vt$Hugo)))

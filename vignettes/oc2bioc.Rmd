@@ -69,22 +69,35 @@ var_in_tx = queryOC([uname], [passwd], chr="chr7", pos="140753336",
 The response to this request (made on 6 Sept 2020 and saved) is:
 ```{r lkvar}
 var_in_tx
-names(httr::content(var_in_tx))
+names(vv <- httr::content(var_in_tx))
 ```
-The content can be explored in a collapsible tree:
-```{r dolistv}
-head(str(httr::content(var_in_tx)))
+The ChasmPlus result looks like
+```{r lkcpl}
+vv$chasmplus_BRCA
 ```
+
 
 Another illustration with a variant in a long non-coding RNA
 (@Suvanto2020) is:
-```{r dononc,eval=FALSE}
-nonco_var = queryOC(chr="chr15", pos="50394581", ref="G", alt="C", 
-   annotator=c("chasmplus_BRCA", "pubmed", "segway_breast", 
-      "dbsnp", "ncrna", "gtex", "phdsnpg"))
-```{r exam}
-head(str(httr::content(nonco_var)))
 ```
+> nonco_var = queryOC(,[username], [passwd], chr="chr15", pos="50394581", ref="G", alt="C",
++    annotator=c("chasmplus_BRCA", "pubmed", "segway_breast",
++       "dbsnp", "ncrna", "gtex", "phdsnpg"))
+> nonco_var
+Response [https://run.opencravat.org/submit/annotate?chrom=chr15&pos=50394581&ref_base=G&alt_base=C&annotators=chasmplus_BRCA,pubmed,segway_breast,dbsnp,ncrna,gtex,phdsnpg]
+  Date: 2020-10-09 19:12
+  Status: 200
+  Content-Type: application/json; charset=utf-8
+  Size: 416 B
+> library(httr)
+0/0 packages newly attached/loaded, see sessionInfo() for details.
+> names(content(nonco_var))
+[1] "ncrna"          "pubmed"         "gtex"           "segway_breast" 
+[5] "chasmplus_BRCA" "dbsnp"          "phdsnpg"        "crx" 
+```
+There is no novel content in the fields, except the position is noted as `Quiescent` in the
+`segway_breast` resources, and the dbSNP id (rs28489579) is returned.
+
 
 # Working with a local deployment of OpenCRAVAT
 
@@ -97,9 +110,11 @@ to direct queries to locally installed annotators.
 ### Acquiring a collection of variants
 
 We'll use the adrenocortical carcinoma data from TCGA to
-obtain a set of variants.
+obtain a set of variants.  These are available as a GRanges
+`gr38` in the oc2bioc package.  The codes to generate this are
+presented without evaluation here:
 
-```{r lklkacc}
+```{r lklkacc,eval=FALSE}
 library(curatedTCGAData)
 suppressMessages({
 acc = curatedTCGAData("ACC", "Mutation", dry.run=FALSE, verbose=FALSE)
@@ -109,26 +124,26 @@ mut
 ```
 The "assays" available record much information about the
 specific variants; we only need REF/ALT codes.
-```{r theass}
+```{r theass,eval=FALSE}
 assayNames(mut)[c(1,7:9)]
 ```
 The addresses of the variants are available after coercing
 the `RaggedArray` instance to a `GRangesList`; this is simplified
 to a `GRanges` with `unlist`.
-```{r geta}
+```{r geta,eval=FALSE}
 gr = unlist(as(mut, "GRangesList"))
 dim(mcols(gr))
 head(gr[,1:3],3)
 ```
 Multibase variants are present.  We'll
 confine attention to single-nucleotide variants (SNV).
-```{r getsnv}
+```{r getsnv, eval=FALSE}
 table(width(gr))[1:6]
 gr = gr[width(gr)==1]
 ```
 ```
 We'll want the variants in GRCh38 coordinates.
-```{r doma}
+```{r doma,eval=FALSE}
 seqlevels(gr) = paste0("chr", seqlevels(gr))
 gr38 = unlist(rtracklayer::liftOver(gr, oc2bioc::ch19to38))
 genome(gr38) = "hg38" # UCSC terminology
@@ -183,8 +198,8 @@ List of 14
 Of crucial significance here is the `id` component.  This will be
 used to find the annotations computed by OpenCRAVAT.
 
-An example annotation resource is shipped with the package
-as `demo_crx`.
+An example annotation result is shipped with the package
+as `crx_demo`.
 ```{r lkde}
 data(crx_demo)
 names(crx_demo)
