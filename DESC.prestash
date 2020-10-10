@@ -1,7 +1,7 @@
 Package: oc2bioc
 Title: simple interfaces from OpenCRAVAT to Bioconductor
 Date: 2020-09-30
-Version: 0.0.20
+Version: 0.0.18
 Authors@R: 
     c(person(
         "Vincent", "Carey", role = c("aut", "cre"),
@@ -14,10 +14,9 @@ License: Artistic-2.0
 Encoding: UTF-8
 Depends: R (>= 4.0), reticulate, httr
 Imports:
-    methods, S4Vectors, RSQLite, GenomicRanges,
+    methods, S4Vectors, RSQLite, GenomicRanges, DBI,
     stringr, BiocGenerics, basilisk, rtracklayer,
-    GenomeInfoDb, dplyr, magrittr, jsonlite, shiny,
-    plotly
+    GenomeInfoDb, dplyr, magrittr
 Suggests: knitr, testthat, listviewer, curatedTCGAData
 LazyData: true
 LazyLoad: true
