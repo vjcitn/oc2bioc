@@ -74,7 +74,7 @@ barplot_gene_ontology = function(con, kpev=c("EXP", "TAS"), ont=c("MF", "BP"), n
 #' @importFrom AnnotationDbi select mapIds
 get_GO_table = function(con, kpev=c("EXP", "TAS"), ont="MF") {
  vt = get_oc_sqlite_content(con, "variant")
- gg = unique(as.character(na.omit(vt$Hugo)))
+ gg = unique(as.character(na.omit(vt$Gene)))
  tab = AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db, keys=gg, keytype="SYMBOL", columns=c("GO", "ONTOLOGY"))
  tab = tab[which(tab$EVIDENCE %in% kpev),]
  tab = tab[which(tab$ONTOLOGY %in% ont),]
