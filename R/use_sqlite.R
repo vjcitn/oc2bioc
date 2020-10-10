@@ -8,7 +8,7 @@
 #' @return vector of character
 header_tx = function (con, tblname) 
 {
-    dd <- ((con %>% tbl(tblname) %>% dplyr::select(col_def)) %>% 
+    dd <- ((con %>% dplyr::tbl(tblname) %>% dplyr::select(col_def)) %>% 
         as.data.frame)[[1]]
     za <- sapply(dd, jsonlite::fromJSON)
     as.character(za[3, ])
@@ -16,7 +16,7 @@ header_tx = function (con, tblname)
 
 #' get SQLite content for a table
 get_oc_sqlite_content = function(con, tablename, as.data.frame=TRUE) {
- ans = con %>% tbl(tablename)
+ ans = con %>% dplyr::tbl(tablename)
  if (!as.data.frame) return(ans)
  hd = header_tx(con, paste(tablename, "_header", sep=""))
  ans = as.data.frame(ans)

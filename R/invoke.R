@@ -36,7 +36,8 @@ ocapp = function() {
       tabPanel("SeqOnt",
        plotly::plotlyOutput("plot2")
        ),
-      tabPanel("about", tableOutput("stuff"))
+      tabPanel("Variants", DT::dataTableOutput("vartab")),
+      tabPanel("Genes", DT::dataTableOutput("genetab"))
       )
     )
    )
@@ -54,6 +55,15 @@ ocapp = function() {
    showNotification("done.")
    list(tab=dat, sqlite=paste0(file$datapath, ".sqlite", sep=""))
    })
+  output$vartab = DT::renderDataTable({
+    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
+    get_oc_tab(con)
+   }) # defaults
+  output$genetab = DT::renderDataTable({
+    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
+    tmp = get_oc_tab(con, "gene")
+    tmp[which(tmp[,3]>0),]
+   }) # defaults
   output$plot1 = plotly::renderPlotly({
    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
    plotly::ggplotly(barplot_gene_ontology(con))
