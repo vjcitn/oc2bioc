@@ -72,6 +72,8 @@ barplot_gene_ontology = function(con, kpev=c("EXP", "TAS"), ont=c("MF", "BP"), n
 }
 
 #' @importFrom AnnotationDbi select mapIds
+#' @import GO.db
+#' @import org.Hs.eg.db
 get_GO_table = function(con, kpev=c("EXP", "TAS"), ont="MF") {
  vt = get_oc_sqlite_content(con, "variant")
  gg = unique(as.character(na.omit(vt$Gene)))

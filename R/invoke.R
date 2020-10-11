@@ -59,8 +59,10 @@ ocapp = function(cravat_cmd="cravat") {
   output$vartab = DT::renderDataTable({
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
     tmp = get_oc_tab(con)
-    ok = which(!is.na(tmp$Link)); # make active links for mupit plots
-    tmp$Link[ok] = paste("<a href='", tmp$Link[ok], "' target='_blank'>mupit</a>", sep="")
+    if ("Link" %in% colnames(tmp)) {
+     ok = which(!is.na(tmp$Link)); # make active links for mupit plots
+     tmp$Link[ok] = paste("<a href='", tmp$Link[ok], "' target='_blank'>mupit</a>", sep="")
+     }
     tmp
    }, escape=FALSE) # defaults
   output$genetab = DT::renderDataTable({
