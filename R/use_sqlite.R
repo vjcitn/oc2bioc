@@ -28,8 +28,8 @@ get_oc_sqlite_content = function(con, tablename, as.data.frame=TRUE) {
 get_oc_tab = function(con, tablename="variant", thincols = c("All Mappings", "Samples", "Gene Targets")) {
  vt = get_oc_sqlite_content(con, tablename, as.data.frame=TRUE)
  nv = names(vt) # column names
- inds = match(thincols, nv)
- if (length(na.omit(inds))>0) vt = vt[,-inds]
+ inds = na.omit(match(thincols, nv))
+ if (length(inds)>0) vt = vt[,-inds]
  vt
 }
 
