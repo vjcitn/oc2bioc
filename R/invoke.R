@@ -19,8 +19,10 @@ validate_tab = function(tab) {
 #' @import shiny
 #' @rawNamespace import("plotly", except=c("config", "last_plot", "select"))
 #' @import ggplot2
+#' @param cravat_cmd character(1) string to invoke cravat
+#' @param sqlite_to_home logical(1) if TRUE will copy generated sqlite to home, with basename of input filename as prefix to .sqlite
 #' @export
-ocapp = function(cravat_cmd="cravat") {
+ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
  ui = fluidPage(
   sidebarLayout(
    sidebarPanel(
@@ -54,6 +56,7 @@ ocapp = function(cravat_cmd="cravat") {
    showNotification("starting cravat...")
    system(gg)
    showNotification("done.")
+   if (sqlite_to_home) file.copy(paste0(file$datapath, ".sqlite", sep=""), paste("~/", file$name, ".sqlite", sep=""))
    list(tab=dat, sqlite=paste0(file$datapath, ".sqlite", sep=""))
    })
   output$vartab = DT::renderDataTable({

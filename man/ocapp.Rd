@@ -4,7 +4,12 @@
 \alias{ocapp}
 \title{simple app}
 \usage{
-ocapp(cravat_cmd = "cravat")
+ocapp(cravat_cmd = "cravat", sqlite_to_home = TRUE)
+}
+\arguments{
+\item{cravat_cmd}{character(1) string to invoke cravat}
+
+\item{sqlite_to_home}{logical(1) if TRUE will copy generated sqlite to home, with basename of input filename as prefix to .sqlite}
 }
 \description{
 simple app
