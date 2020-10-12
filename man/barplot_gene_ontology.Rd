@@ -6,7 +6,7 @@
 \usage{
 barplot_gene_ontology(
   con,
-  kpev = c("EXP", "TAS"),
+  kpev = c("EXP", "TAS", "IPI", "IDA", "IMP", "IGI"),
   ont = c("MF", "BP"),
   ncat = 15
 )
@@ -14,9 +14,11 @@ barplot_gene_ontology(
 \arguments{
 \item{con}{SQLite connection to openCRAVAT .sqlite}
 
-\item{kpev}{character() evidence codes to retain, defaulting to EXP and TAS}
+\item{kpev}{character() evidence codes to retain, defaulting to EXP, TAS, IPI, IDA, IMP, IGI}
 
 \item{ont}{character() ontology codes to retain, defaulting to MF and BP}
+
+\item{ncat}{numeric(1) maximum number of codes to report}
 }
 \value{
 a ggplot instance

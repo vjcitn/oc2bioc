@@ -15,6 +15,10 @@ header_tx = function (con, tblname)
 }
 
 #' get SQLite content for a table
+#' @param con DBI connection
+#' @param tablename character(1) table name
+#' @param as.data.frame logical(1)
+#' @param use_header logical(1) if TRUE look in database for table that elaborates table colnames
 get_oc_sqlite_content = function(con, tablename, as.data.frame=TRUE, use_header=TRUE) {
  ans = con %>% dplyr::tbl(tablename)
  if (!as.data.frame) return(ans)
@@ -68,6 +72,7 @@ barplot_sequence_ontology = function(con) {
 #' @param con SQLite connection to openCRAVAT .sqlite
 #' @param kpev character() evidence codes to retain, defaulting to EXP, TAS, IPI, IDA, IMP, IGI
 #' @param ont character() ontology codes to retain, defaulting to MF and BP
+#' @param ncat numeric(1) maximum number of codes to report
 #' @return a ggplot instance
 #' @export
 barplot_gene_ontology = function(con, kpev=c("EXP", "TAS",

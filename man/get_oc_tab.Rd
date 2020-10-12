@@ -7,7 +7,8 @@
 get_oc_tab(
   con,
   tablename = "variant",
-  thincols = c("All Mappings", "Samples", "Gene Targets")
+  thincols = c("All Mappings", "Samples", "Gene Targets"),
+  use_header = TRUE
 )
 }
 \description{
