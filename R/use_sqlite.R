@@ -54,8 +54,11 @@ barplot_sequence_ontology = function(con) {
  somap = SO_map$term
  names(somap) = SO_map$abbr
  vt$seq_onto = somap[vt$`Sequence Ontology`]
- vt$chr2 = ordered(vt$Chrom, levels=paste("chr", c(1:22, "X", "Y"), sep=""))
- ggplot2::ggplot(vt, aes(y=chr2, fill=seq_onto)) + ggplot2::geom_bar() 
+ vt$chrom = ordered(vt$Chrom, levels=paste("chr", c(1:22, "X", "Y"), sep=""))
+# ggplot2::ggplot(vt, aes(y=chr2, fill=seq_onto)) + ggplot2::geom_bar() 
+ kk = vt %>% dplyr::select(chrom, seq_onto) %>% dplyr::group_by(chrom, seq_onto) %>%
+   dplyr::summarise(n=dplyr::n()) 
+ ggplot2::ggplot(kk, aes(x=chrom, fill=seq_onto)) + geom_col(aes(y=n)) + coord_flip()
 }
 
 #' make a gene ontology barplot over all variants

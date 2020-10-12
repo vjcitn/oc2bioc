@@ -17,7 +17,7 @@ Imports:
     methods, S4Vectors, RSQLite, GenomicRanges,
     stringr, BiocGenerics, basilisk, rtracklayer,
     GenomeInfoDb, dplyr, magrittr, jsonlite, shiny,
-    plotly, GO.db, org.Hs.eg.db
+    plotly, GO.db, org.Hs.eg.db, shinytoastr
 Suggests: knitr, testthat, listviewer, curatedTCGAData
 LazyData: true
 LazyLoad: true
