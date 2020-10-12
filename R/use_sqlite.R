@@ -15,18 +15,21 @@ header_tx = function (con, tblname)
 }
 
 #' get SQLite content for a table
-get_oc_sqlite_content = function(con, tablename, as.data.frame=TRUE) {
+get_oc_sqlite_content = function(con, tablename, as.data.frame=TRUE, use_header=TRUE) {
  ans = con %>% dplyr::tbl(tablename)
  if (!as.data.frame) return(ans)
- hd = header_tx(con, paste(tablename, "_header", sep=""))
  ans = as.data.frame(ans)
- names(ans) = hd
+ if (use_header) {
+   hd = header_tx(con, paste(tablename, "_header", sep=""))
+   names(ans) = hd
+   }
  ans
 }
 
 #' get an optionally thinned table
-get_oc_tab = function(con, tablename="variant", thincols = c("All Mappings", "Samples", "Gene Targets")) {
- vt = get_oc_sqlite_content(con, tablename, as.data.frame=TRUE)
+get_oc_tab = function(con, tablename="variant", thincols = c("All Mappings", "Samples", "Gene Targets"),
+    use_header=TRUE) {
+ vt = get_oc_sqlite_content(con, tablename, as.data.frame=TRUE, use_header=use_header)
  nv = names(vt) # column names
  inds = na.omit(match(thincols, nv))
  if (length(inds)>0) vt = vt[,-inds]
@@ -63,27 +66,30 @@ barplot_sequence_ontology = function(con) {
 
 #' make a gene ontology barplot over all variants
 #' @param con SQLite connection to openCRAVAT .sqlite
-#' @param kpev character() evidence codes to retain, defaulting to EXP and TAS
+#' @param kpev character() evidence codes to retain, defaulting to EXP, TAS, IPI, IDA, IMP, IGI
 #' @param ont character() ontology codes to retain, defaulting to MF and BP
 #' @return a ggplot instance
 #' @export
-barplot_gene_ontology = function(con, kpev=c("EXP", "TAS"), ont=c("MF", "BP"), ncat=15) {
+barplot_gene_ontology = function(con, kpev=c("EXP", "TAS",
+     "IPI", "IDA", "IMP", "IGI"), ont=c("MF", "BP"), ncat=15) {
  gg = get_GO_table(con, kpev=kpev, ont=ont)
  dd = tail(sort(table(gg$term)), ncat)
  gg = gg[gg$term %in% names(dd),]
- ggplot2::ggplot(gg, aes(y=term, fill=EVIDENCE)) + ggplot2::geom_bar() 
+ ggg = gg %>% dplyr::group_by(term, EVIDENCE) %>% summarise(n=dplyr::n())
+ ggg$n = pmin(ggg$n, 1000)
+ ggplot2::ggplot(ggg, aes(x=term, y=n, fill=EVIDENCE)) + ggplot2::geom_col() + coord_flip()
 }
 
 #' @importFrom AnnotationDbi select mapIds
 #' @import GO.db
 #' @import org.Hs.eg.db
-get_GO_table = function(con, kpev=c("EXP", "TAS"), ont="MF") {
+get_GO_table = function(con, kpev=c("EXP", "TAS", "IPI", "IDA", "IMP", "IGI"), ont="MF") {
  vt = get_oc_sqlite_content(con, "variant")
  gg = unique(as.character(na.omit(vt$Gene)))
- tab = AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db, keys=gg, keytype="SYMBOL", columns=c("GO", "ONTOLOGY"))
+ tab = AnnotationDbi::select(org.Hs.eg.db, keys=gg, keytype="SYMBOL", columns=c("GO", "ONTOLOGY"))
  tab = tab[which(tab$EVIDENCE %in% kpev),]
  tab = tab[which(tab$ONTOLOGY %in% ont),]
- tms = AnnotationDbi::mapIds(GO.db::GO.db, keys=unique(tab$GO), keytype="GOID", column="TERM")
+ tms = AnnotationDbi::mapIds(GO.db, keys=unique(tab$GO), keytype="GOID", column="TERM")
  tab$term = tms[tab$GO]
  tab
 }

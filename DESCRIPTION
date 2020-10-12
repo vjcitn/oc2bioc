@@ -12,12 +12,12 @@ Description: Provide simple interfaces between OpenCRAVAT and Bioconductor
     for annotation of cancer-related variants.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 4.0), reticulate, httr
+Depends: R (>= 4.0), reticulate, httr, org.Hs.eg.db, GO.db
 Imports:
     methods, S4Vectors, RSQLite, GenomicRanges,
     stringr, BiocGenerics, basilisk, rtracklayer,
     GenomeInfoDb, dplyr, magrittr, jsonlite, shiny,
-    plotly, GO.db, org.Hs.eg.db, shinytoastr
+    plotly, shinytoastr
 Suggests: knitr, testthat, listviewer, curatedTCGAData
 LazyData: true
 LazyLoad: true

@@ -44,6 +44,11 @@ ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
       tabPanel("Variants", DT::dataTableOutput("vartab")),
       tabPanel("Genes", DT::dataTableOutput("genetab")),
       tabPanel("Versions", DT::dataTableOutput("vertab")),
+      tabPanel("About", helpText("Source code at github.com/vjcitn/oc2bioc"), 
+                 helpText("Gene Ontology table is constructed using 15 most frequent
+                 occurrence of GO tags in MF or BP subontologies
+                 for which association in humans is annotated with evidence code among
+                 TAS, IPI, IDA, IMP, EXP, IGI.  Mapping uses org.Hs.eg.db and GO.db.  Counts are truncated at 1000.")),
       tabPanel("Log", htmlOutput("textstream_output"))
       )
     )
@@ -67,34 +72,39 @@ ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
     variants = get_oc_tab(con)
     genes = get_oc_tab(con, "gene")
+    info = get_oc_tab(con, "info", use_header=FALSE)
     DBI::dbDisconnect(con)
-    stopApp(returnValue=list(variants=variants, genes=genes))
+    stopApp(returnValue=list(variants=variants, genes=genes, info=info))
     })
   output$selector = renderUI({
-    tsvs = dir("~", patt="tsv$")
-    tsvsf = dir("~", patt="tsv$", full=TRUE)
+    tsvs = dir("~", patt="tsv$|sqlite$")
+    tsvsf = dir("~", patt="tsv$|sqlite$", full=TRUE)
     # should validate what is found
     validate(need(length(tsvs)>0, "no tsv files found"))
-    checkboxGroupInput("picked_tsv", "Choose a TSV for variant annotation", choiceNames  = tsvs, choiceValues=tsvsf)
+    checkboxGroupInput("picked_resource", "Choose a TSV for variant annotation, or SQLite for exploration", choiceNames  = tsvs, choiceValues=tsvsf)
     })
   output$GOcomment = renderPrint({
-    req(input$picked_tsv)
-    paste("OpenCRAVAT GO analysis of variants in ", input$picked_tsv)
+    req(input$picked_resource)
+    paste("OpenCRAVAT GO analysis of variants in ", input$picked_resource)
     })
   get_data = reactive({
    tf = paste0(tempfile(), ".tsv")
-   req(input$picked_tsv)
-   validate(need(length(input$picked_tsv)==1, "check only one box"))
-   file.copy(input$picked_tsv, tf)  # the cravat run occurs in temp area
-   gg <- paste(cravat_cmd, tf, "-t text -l", input$build)
-   showNotification("starting cravat...")
-   toastr_info("running cravat...")
-   system(gg)
-   thelog <<- paste0(tf, ".log")
-   showNotification("done.")
-   if (sqlite_to_home) file.copy(paste0(tf, ".sqlite", sep=""), 
-        paste("~/", basename(input$picked_tsv), ".sqlite", sep=""))
-   list(tab=NA, sqlite=paste0(tf, ".sqlite", sep=""))
+   req(input$picked_resource)
+   validate(need(length(input$picked_resource)==1, "check only one box"))
+   if (length(grep("sqlite$", input$picked_resource))==0) {
+    file.copy(input$picked_resource, tf)  # the cravat run occurs in temp area
+    gg <- paste(cravat_cmd, tf, "-t text -l", input$build)
+    showNotification("starting cravat...")
+    toastr_info("running cravat...")
+    system(gg)
+    thelog <<- paste0(tf, ".log")
+    showNotification("done.")
+    tmp_sqlite_name = paste0(tf, ".sqlite", sep="")
+    if (sqlite_to_home) file.copy(tmp_sqlite_name,
+        paste("~/", basename(input$picked_resource), ".sqlite", sep=""))
+    sqlite_name = tmp_sqlite_name
+    } else sqlite_name = input$picked_resource
+   list(tab=NA, sqlite=sqlite_name)
    })
   output$vartab = DT::renderDataTable({
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
@@ -121,12 +131,12 @@ ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
   output$plot1 = plotly::renderPlotly({
    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
    plotly::ggplotly(barplot_gene_ontology(con) + labs(title=paste("GO analysis of variants in",
-      basename(input$picked_tsv)), subtitle="(15 most frequent categories among mutated genes)"))
+      basename(input$picked_resource)), subtitle="(15 most frequent categories among mutated genes)"))
    })
   output$plot2 = plotly::renderPlotly({
    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
    plotly::ggplotly(barplot_sequence_ontology(con) + labs(title=paste("Sequence Ontology classes of variants in",
-     basename(input$picked_tsv))))
+     basename(input$picked_resource))))
    })
  }
  runApp(list(ui=ui, server=server))
