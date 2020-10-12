@@ -27,8 +27,9 @@ ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
   sidebarLayout(
    sidebarPanel(
     helpText("Variant Annotation with", a(href="https://github.com/KarchinLab/open-cravat/wiki", "OpenCRAVAT")),
+    uiOutput("selector"),
     checkboxGroupInput("build", "ref. build", choices=c("hg38", "hg19"), selected="hg38"),
-    fileInput("basicfile", "TSV file"), width=2
+    actionButton("stopBtn", "Stop app")
     ),
     mainPanel(
      tabsetPanel(
@@ -46,18 +47,30 @@ ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
    )
   )
  server = function(input, output) {
+  observeEvent(input$stopBtn, { 
+    con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
+    variants = get_oc_tab(con)
+    genes = get_oc_tab(con, "gene")
+    stopApp(returnValue=list(variants=variants, genes=genes))
+    })
+  output$selector = renderUI({
+    tsvs = dir("~", patt="tsv$")
+    tsvsf = dir("~", patt="tsv$", full=TRUE)
+    # should validate what is found
+    validate(need(length(tsvs)>0, "no tsv files found"))
+    checkboxGroupInput("picked_tsv", "Choose a TSV for variant annotation", choiceNames  = tsvs, choiceValues=tsvsf)
+    })
   get_data = reactive({
-   file = input$basicfile
-   req(file)
-   ext = tools::file_ext(file$datapath)
-   validate(need(ext == "tsv", "Use a tsv file"))
-   gg <- paste(cravat_cmd, file$datapath, "-t text -l", input$build)
-   dat <- read.delim(file$datapath, h=FALSE, sep="\t")
+   tf = paste0(tempfile(), ".tsv")
+   req(input$picked_tsv)
+   file.copy(input$picked_tsv, tf)  # the cravat run occurs in temp area
+   gg <- paste(cravat_cmd, tf, "-t text -l", input$build)
    showNotification("starting cravat...")
    system(gg)
    showNotification("done.")
-   if (sqlite_to_home) file.copy(paste0(file$datapath, ".sqlite", sep=""), paste("~/", file$name, ".sqlite", sep=""))
-   list(tab=dat, sqlite=paste0(file$datapath, ".sqlite", sep=""))
+   if (sqlite_to_home) file.copy(paste0(tf, ".sqlite", sep=""), 
+        paste("~/", basename(input$picked_tsv), ".sqlite", sep=""))
+   list(tab=NA, sqlite=paste0(tf, ".sqlite", sep=""))
    })
   output$vartab = DT::renderDataTable({
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
