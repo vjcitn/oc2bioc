@@ -31,6 +31,10 @@ get_oc_sqlite_content = function(con, tablename, as.data.frame=TRUE, use_header=
 }
 
 #' get an optionally thinned table
+#' @param con an RSQLite connection
+#' @param tablename character(1)
+#' @param thincols character() open-cravat columns
+#' @param use_header logical(1) 
 get_oc_tab = function(con, tablename="variant", thincols = c("All Mappings", "Samples", "Gene Targets"),
     use_header=TRUE) {
  vt = get_oc_sqlite_content(con, tablename, as.data.frame=TRUE, use_header=use_header)
@@ -41,6 +45,7 @@ get_oc_tab = function(con, tablename="variant", thincols = c("All Mappings", "Sa
 }
 
 #' get the SO frequency
+#' @param con an RSQLite connection
 get_SO_freq = function(con) {
  tb = get_oc_tab(con, tablename="variant")
  ans = tb %>% dplyr::select(`Sequence Ontology`) %>% group_by(`Sequence Ontology`) %>% summarise(n=n())

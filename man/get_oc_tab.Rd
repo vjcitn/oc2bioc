@@ -11,6 +11,15 @@ get_oc_tab(
   use_header = TRUE
 )
 }
+\arguments{
+\item{con}{an RSQLite connection}
+
+\item{tablename}{character(1)}
+
+\item{thincols}{character() open-cravat columns}
+
+\item{use_header}{logical(1)}
+}
 \description{
 get an optionally thinned table
 }

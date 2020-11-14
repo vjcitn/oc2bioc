@@ -6,6 +6,9 @@
 \usage{
 get_SO_freq(con)
 }
+\arguments{
+\item{con}{an RSQLite connection}
+}
 \description{
 get the SO frequency
 }
