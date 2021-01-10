@@ -120,7 +120,7 @@ ocapp = function(cravat_cmd="cravat", sqlite_to_home=TRUE) {
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
     tmp = get_oc_tab(con, "gene")
     DBI::dbDisconnect(con)
-    tmp[which(tmp[,3]>0),]
+    tmp  # [which(tmp[,3]>0),]
    }) # defaults
   output$vertab = DT::renderDataTable({
     con = DBI::dbConnect(RSQLite::SQLite(), get_data()$sqlite)
