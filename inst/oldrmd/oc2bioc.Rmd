@@ -1,0 +1,266 @@
+---
+title: "Introduction to the oc2bioc package"
+author:
+- name: Vincent Carey
+  affiliation: Channing Division of Network Medicine, Brigham and Women's Hospital
+  email: stvjc@channing.harvard.edu
+package: oc2bioc
+output:
+  BiocStyle::html_document
+abstract: |
+  This package defines simple interfaces between OpenCRAVAT and Bioconductor
+vignette: |
+  %\VignetteIndexEntry{Introduction to the oc2bioc package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: oc2bioc.bib
+---
+
+```{r setup,echo=FALSE}
+suppressPackageStartupMessages({
+library(oc2bioc)
+library(curatedTCGAData)
+})
+```
+
+# Introduction
+
+We propose a bidirectional interface between Bioconductor (@Huber2015) and OpenCRAVAT (@Pagel2020).
+
+## Enumerating OpenCRAVAT "modules"
+
+We aim for an interactively searchable table along the lines of
+
+![filtered table of modules](filt.png)
+
+We use the `open-cravat` python modules (installed with oc2bioc,
+via the basilisk protocol) to obtain the listing of all modules.
+This listing is managed in an S4 class instance:
+
+```{r doo}
+library(oc2bioc)
+ms = populate_module_set()
+ms
+```
+
+An as.data.frame method is available.
+```{r lkh}
+dim(as.data.frame(ms))
+```
+
+Use `DT::datatable` with the data.frame instance to obtain the
+searchable table depicted above.
+
+## Single-variant queries
+
+The `queryOC` function authenticates to the OpenCRAVAT project's server
+and uses the RESTful API to resolve queries.  If username and
+password are not supplied, environment variables are queried
+to obtain these.
+
+Here's an illustration of how this works.  This chunk
+will not run unless an OpenCRAVAT username and
+password are supplied as the first two arguments.
+```{r try1, eval=FALSE}
+var_in_tx = queryOC([uname], [passwd], chr="chr7", pos="140753336", 
+   ref="A", alt="T", 
+   annotator=c("chasmplus_BRCA", "pubmed", "segway_breast"))
+```
+The response to this request (made on 6 Sept 2020 and saved) is:
+```{r lkvar}
+var_in_tx
+names(vv <- httr::content(var_in_tx))
+```
+The ChasmPlus result looks like
+```{r lkcpl}
+vv$chasmplus_BRCA
+```
+
+
+Another illustration with a variant in a long non-coding RNA
+(@Suvanto2020) is:
+```
+> nonco_var = queryOC(,[username], [passwd], chr="chr15", pos="50394581", ref="G", alt="C",
++    annotator=c("chasmplus_BRCA", "pubmed", "segway_breast",
++       "dbsnp", "ncrna", "gtex", "phdsnpg"))
+> nonco_var
+Response [https://run.opencravat.org/submit/annotate?chrom=chr15&pos=50394581&ref_base=G&alt_base=C&annotators=chasmplus_BRCA,pubmed,segway_breast,dbsnp,ncrna,gtex,phdsnpg]
+  Date: 2020-10-09 19:12
+  Status: 200
+  Content-Type: application/json; charset=utf-8
+  Size: 416 B
+> library(httr)
+0/0 packages newly attached/loaded, see sessionInfo() for details.
+> names(content(nonco_var))
+[1] "ncrna"          "pubmed"         "gtex"           "segway_breast" 
+[5] "chasmplus_BRCA" "dbsnp"          "phdsnpg"        "crx" 
+```
+There is no novel content in the fields, except the position is noted as `Quiescent` in the
+`segway_breast` resources, and the dbSNP id (rs28489579) is returned.
+
+
+# Working with a local deployment of OpenCRAVAT
+
+## Using the REST API
+
+When a local deployment is running, for example via `oc gui`,
+`queryOC` can be used with appropriate settings of `baseURL`
+to direct queries to locally installed annotators.
+
+### Acquiring a collection of variants
+
+We'll use the adrenocortical carcinoma data from TCGA to
+obtain a set of variants.  These are available as a GRanges
+`gr38` in the oc2bioc package.  The codes to generate this are
+presented without evaluation here:
+
+```{r lklkacc,eval=FALSE}
+library(curatedTCGAData)
+suppressMessages({
+acc = curatedTCGAData("ACC", "Mutation", dry.run=FALSE, verbose=FALSE)
+})
+mut = experiments(acc)[[1]]
+mut
+```
+The "assays" available record much information about the
+specific variants; we only need REF/ALT codes.
+```{r theass,eval=FALSE}
+assayNames(mut)[c(1,7:9)]
+```
+The addresses of the variants are available after coercing
+the `RaggedArray` instance to a `GRangesList`; this is simplified
+to a `GRanges` with `unlist`.
+```{r geta,eval=FALSE}
+gr = unlist(as(mut, "GRangesList"))
+dim(mcols(gr))
+head(gr[,1:3],3)
+```
+Multibase variants are present.  We'll
+confine attention to single-nucleotide variants (SNV).
+```{r getsnv, eval=FALSE}
+table(width(gr))[1:6]
+gr = gr[width(gr)==1]
+```
+```
+We'll want the variants in GRCh38 coordinates.
+```{r doma,eval=FALSE}
+seqlevels(gr) = paste0("chr", seqlevels(gr))
+gr38 = unlist(rtracklayer::liftOver(gr, oc2bioc::ch19to38))
+genome(gr38) = "hg38" # UCSC terminology
+head(gr38[,1:3],3)
+length(gr38)
+length(unique(gr38))
+```
+
+### Transforming to a POST-able file, via data.frame
+
+```{r mm}
+mtb = make_oc_POSTable(gr38) # already remapped
+head(mtb)
+```
+Use code like
+```
+write.table(mtb, file="/tmp/abc.txt", sep="\t", col.names=FALSE, row.names=FALSE, quote=FALSE)
+```
+to create a file that can be ingested by OpenCRAVAT.
+
+### Submitting the multivariant query for local annotation
+
+Once the POSTable table has been written to a file, call `run_oc_req`
+with a `url` appropriate to your system, as in the following:
+```
+myrun = run_oc_req(url="http://0.0.0.0:8080/submit/submit",
+   postfile="/tmp/abc.txt", annotators=c("clinvar", "segway_lung"),
+   reports=c("text", "vcf"), assembly="hg38", note="test run")
+```
+The object `myrun` will be an R representation of a python dictionary
+with element `r`.  This can be interrogated as `myrun$r$json()` to
+get information about the run.
+```
+> str(myrun$r$json())
+List of 14
+ $ orig_input_fname   : chr "abc.txt"
+ $ assembly           : chr "hg38"
+ $ note               : chr "test run"
+ $ db_path            : chr ""
+ $ viewable           : logi FALSE
+ $ reports            : chr [1:2] "text" "vcf"
+ $ annotators         : chr [1:2] "clinvar" "segway_lung"
+ $ annotator_version  : chr ""
+ $ open_cravat_version: chr ""
+ $ num_input_var      : chr ""
+ $ submission_time    : chr "2020-09-25T14:15:20.625643"
+ $ id                 : chr "200925-141520"
+ $ run_name           : chr "abc.txt"
+ $ status             :List of 1
+  ..$ status: chr "Submitted"
+```
+Of crucial significance here is the `id` component.  This will be
+used to find the annotations computed by OpenCRAVAT.
+
+An example annotation result is shipped with the package
+as `crx_demo`.
+```{r lkde}
+data(crx_demo)
+names(crx_demo)
+nonsyn = which(crx_demo[,10]!="SYN")
+head(crx_demo[nonsyn,c(2,3,8:10)])
+```
+
+### Retrieving locally generated annotation results
+
+
+
+## Direct querying of annotator SQLite
+
+Local deployments of OpenCRAVAT will have SQLite databases
+corresponding to the installed annotators.  The `oc2bioc`
+package includes utilities for identifying and
+querying these.  
+
+Here's an example.  Segway's lung data is actually all based on fetal lung tissue.
+```
+> list_local_annotators()
+[1] "clinvar"       "genehancer"    "segway_lung"   "segway_muscle"
+> lcon = connect_local_annotator("segway_lung")
+> dbListTables(lcon)
+ [1] "chr1"                    "chr10"                  
+ [3] "chr11"                   "chr12"                  
+ [5] "chr12_GL877875v1_alt"    "chr13"                  
+...
+> lcon %>% tbl("chr1") %>% glimpse()
+Rows: ??
+Columns: 5
+Database: sqlite 3.30.1 [/home/stvjc/.local/lib/python3.8/site-packages/cravat/modules/annotators/segway_lung/data/segway_lung.sqlite]
+$ bin    <int> 585, 585, 585, 585, 585, 585, 585, 585, 585, 585, 585, 585, 58…
+$ start  <int> 11000, 13000, 13500, 14800, 15100, 54400, 54700, 55700, 79100,…
+$ end    <int> 13000, 13500, 14800, 15100, 16100, 54700, 55700, 56000, 79300,…
+$ tissue <chr> "FETAL_LUNG", "FETAL_LUNG", "FETAL_LUNG", "FETAL_LUNG", "FETAL…
+$ state  <chr> "11_Quiescent", "9_Quiescent", "11_Quiescent", "9_Quiescent", …
+```
+
+# Appendix: Ontology resources
+
+Sequence Ontology (SO) is used to label and group variants by structural
+or functional type.  We noted abbreviations for SO terms in the `crx_demo`
+file and did not see a conventional mapping for these.  The mapping was
+extracted from JSON found in `cravat_util.py`.
+```{r lksom}
+head(SO_map)
+```
+
+To help interpret the SO terms, we include a snapshot of the SO that retains
+the graphical structure of relationships among terms.  A view of variant-related
+concepts can be plotted using tools in the ontologyIndex and ontoProc packages.
+
+```{r lksopl}
+ontoProc::onto_plot2(SO_onto, na.omit(SO_map[,3])[39:49])
+```
+
+Not all the terms used in OpenCRAVAT are in the display above, and most
+of the terms in the display are not explicitly used in OpenCRAVAT.  The
+display is here to orient readers to the SO concepts.
+
+
+
+# References

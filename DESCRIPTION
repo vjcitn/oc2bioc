@@ -17,11 +17,11 @@ Imports:
     methods, S4Vectors, RSQLite, GenomicRanges,
     stringr, BiocGenerics, basilisk, rtracklayer,
     GenomeInfoDb, dplyr, magrittr, jsonlite, shiny,
-    shinytoastr, DBI, DT, rmarkdown
+    shinytoastr, DBI, DT, rmarkdown, TnT
 Suggests: knitr, testthat, listviewer, curatedTCGAData
 LazyData: true
 LazyLoad: true
 VignetteBuilder: knitr
 biocViews: Infrastructure, Cancer, VariantAnnotation, Genetics
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 StagedInstall: false
